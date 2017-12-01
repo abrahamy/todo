@@ -9,13 +9,40 @@ use Illuminate\Http\Response;
 class CategoryController extends Controller
 {
     /**
+     * Validate form data
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return array|boolean
+     */
+    private function validate(Request $request)
+    {
+        $validationRules = [
+            'name' => 'required|unique:categories|max:30'
+        ];
+        $data = $request->validate($validationRules);
+
+        if (!isset($data['name'])) {
+            return false;
+        }
+
+        return $data;
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $categories = Category::all();
+        $jsend = [
+            'status' => 'success',
+            'data' => $categories
+        ];
+        $response = Response::make(json_encode($jsend));
+
+        return $response;
     }
 
     /**
@@ -26,11 +53,9 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|unique:categories|max:30'
-        ]);
+        $data = $this->validate($request);
 
-        if (!isset($data['name'])) {
+        if (!$data) {
             $jsend = [
                 'status' => 'fail',
                 'data' => [
@@ -64,12 +89,10 @@ class CategoryController extends Controller
     {
         $jsend = [
             'status' => 'success',
-            'data' => [
-                'category' => $category
-            ]
+            'data' => $category
         ];
 
-        $response = Response::make(\json_encode($jsend), 200);
+        $response = Response::make(\json_encode($jsend));
         return $response;
     }
 
@@ -82,11 +105,9 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $data = $request->validate([
-            'name' => 'required|unique:categories|max:30'
-        ]);
+        $data = $this->validate($request);
 
-        if (!isset($data['name'])) {
+        if (!$data) {
             $jsend = [
                 'status' => 'fail',
                 'data' => [
@@ -100,11 +121,7 @@ class CategoryController extends Controller
         $category->name = $data['name'];
         $category->save();
 
-        $jsend = [
-            'status' => 'success',
-            'message' => 'resource updated.'
-        ];
-        $response = Response::make(\json_encode($jsend), 201);
+        $response = Response::make(null, 204);
     }
 
     /**
@@ -120,7 +137,7 @@ class CategoryController extends Controller
             'status' => 'success',
             'message' => 'resource deleted.'
         ];
-        $response = Response::make(\json_encode($jsend), 200);
+        $response = Response::make(\json_encode($jsend));
         return $response;
     }
 }
