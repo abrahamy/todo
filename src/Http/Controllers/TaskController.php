@@ -69,7 +69,29 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $data = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required'
+        ]);
+
+        if (!(isset($data['category_id']) && isset($data['description']))) {
+            $jsend = [
+                'status' => 'error',
+                'message' => 'invalid data.'
+            ];
+            $response = Response::make(json_encode($jsend), 400);
+            return response;
+        }
+
+        $task->category_id = $data['category_id'];
+        $task->description = $data['description'];
+        $task->save();
+
+        $jsend = [
+            'status' => 'success',
+            'message' => 'resource updated.'
+        ];
+        $response = Response::make(\json_encode($jsend), 201);
     }
 
     /**
@@ -80,6 +102,12 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        $jsend = [
+            'status' => 'success',
+            'message' => 'resource deleted.'
+        ];
+        $response = Response::make(\json_encode($jsend), 200);
+        return $response;
     }
 }

@@ -4,6 +4,7 @@ namespace abrahamy\Todo\Http\Controllers;
 
 use abrahamy\Todo\Category;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
@@ -18,16 +19,6 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -35,7 +26,32 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|unique:categories|max:30'
+        ]);
+
+        if (!isset($data['name'])) {
+            $jsend = [
+                'status' => 'fail',
+                'data' => [
+                    'name' => 'Category name is required'
+                ]
+            ];
+            $response = Response::make(json_encode($jsend), 400);
+            return response;
+        }
+
+        $category = new Category();
+        $category->name = $data['name'];
+        $category->save();
+
+        $jsend = [
+            'status' => 'success',
+            'data' => [
+                'category_id' => $category->id
+            ]
+        ];
+        $response = Response::make(\json_encode($jsend), 201);
     }
 
     /**
@@ -46,18 +62,15 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
-    }
+        $jsend = [
+            'status' => 'success',
+            'data' => [
+                'category' => $category
+            ]
+        ];
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Category $category)
-    {
-        //
+        $response = Response::make(\json_encode($jsend), 200);
+        return $response;
     }
 
     /**
@@ -69,7 +82,29 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|unique:categories|max:30'
+        ]);
+
+        if (!isset($data['name'])) {
+            $jsend = [
+                'status' => 'fail',
+                'data' => [
+                    'name' => 'Category name is required'
+                ]
+            ];
+            $response = Response::make(json_encode($jsend), 400);
+            return response;
+        }
+
+        $category->name = $data['name'];
+        $category->save();
+
+        $jsend = [
+            'status' => 'success',
+            'message' => 'resource updated.'
+        ];
+        $response = Response::make(\json_encode($jsend), 201);
     }
 
     /**
@@ -80,6 +115,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        $jsend = [
+            'status' => 'success',
+            'message' => 'resource deleted.'
+        ];
+        $response = Response::make(\json_encode($jsend), 200);
+        return $response;
     }
 }
