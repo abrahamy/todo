@@ -8,23 +8,35 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     /**
+     * Validate form data
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return array|boolean
+     */
+    private function validate(Request $request)
+    {
+        $validationRules = [
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required'
+        ];
+        $data = $request->validate($validationRules);
+
+        if (!(isset($data['category_id']) && isset($data['description']))) {
+            return false;
+        }
+
+        return $data;
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $tasks = Task::all();
+        return view('index', $tasks);
     }
 
     /**
@@ -35,7 +47,29 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $this->validate($request);
+
+        if (!$data) {
+            $jsend = [
+                'status' => 'fail',
+                'message' => 'invalid data.'
+            ];
+            $response = Response::make(json_encode($jsend), 400);
+            return response;
+        }
+
+        $task = new Task();
+        $task->category_id = $data['category_id'];
+        $task->description = $data['description'];
+        $category->save();
+
+        $jsend = [
+            'status' => 'success',
+            'data' => [
+                'task_id' => $task->id
+            ]
+        ];
+        $response = Response::make(\json_encode($jsend), 201);
     }
 
     /**
@@ -46,18 +80,13 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
-    }
+        $jsend = [
+            'status' => 'success',
+            'data' => $task
+        ];
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
-    {
-        //
+        $response = Response::make(\json_encode($jsend));
+        return $response;
     }
 
     /**
@@ -69,12 +98,9 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        $data = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'required'
-        ]);
+        $data = $this->validate($request);
 
-        if (!(isset($data['category_id']) && isset($data['description']))) {
+        if (!$data) {
             $jsend = [
                 'status' => 'error',
                 'message' => 'invalid data.'
@@ -87,11 +113,7 @@ class TaskController extends Controller
         $task->description = $data['description'];
         $task->save();
 
-        $jsend = [
-            'status' => 'success',
-            'message' => 'resource updated.'
-        ];
-        $response = Response::make(\json_encode($jsend), 201);
+        $response = Response::make(null, 204);
     }
 
     /**
@@ -107,7 +129,7 @@ class TaskController extends Controller
             'status' => 'success',
             'message' => 'resource deleted.'
         ];
-        $response = Response::make(\json_encode($jsend), 200);
+        $response = Response::make(\json_encode($jsend));
         return $response;
     }
 }

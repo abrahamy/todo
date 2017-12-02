@@ -11,7 +11,7 @@
 |
 */
 
-Route::resources([
+Route::apiResources([
     'categories' => 'abrahamy\Todo\Http\Controllers\CategoryController',
     'tasks' => 'abrahamy\Todo\Http\Controllers\TaskController'
 ]);
