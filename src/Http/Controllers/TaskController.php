@@ -9,7 +9,8 @@ class TaskController extends Controller
 {
     private $_validationRule = [
         'category_id' => 'required|exists:categories,id',
-        'description' => 'required'
+        'description' => 'required',
+        'done' => 'nullable|boolean'
     ];
 
     /**
@@ -92,6 +93,7 @@ class TaskController extends Controller
 
         $task->category_id = $data['category_id'];
         $task->description = $data['description'];
+        $task->done = isset($data['done']) ? $data['done'] : false;
         $task->save();
 
         return response()->json(null, 204);
