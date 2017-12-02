@@ -25,7 +25,7 @@
       <input type="checkbox" @click="toggleDone(task)"> {{ task.description }}
     </label>
     <label class="panel-block has-text-grey-lighter has-line-through" v-for="task in completedTasks" :key="task.id">
-      <input type="checkbox" @click="toggleDone(task)"> {{ task.description }}
+      {{ task.description }}
     </label>
   </nav>
 </template>
@@ -49,6 +49,8 @@ export default {
     return {
       categories: [],
       tasks: [],
+      pendingTasks: [],
+      completedTasks: [],
       task: {},
       urls: {
         categories: "/categories",
@@ -56,13 +58,11 @@ export default {
       }
     }
   },
-  computed: {
-    pendingTasks() {
-      return this.tasks.filter(t => !t.done)
-    },
-    completedTasks() {
-      return this.tasks.filter(t => t.done)
-    }
+  watch: {
+      tasks(newVal) {
+          this.pendingTasks = newVal.filter(t => !t.done)
+          this.completedTasks = newVal.filter(t => t.done)
+      }
   },
   methods: {
     getInitialData() {
