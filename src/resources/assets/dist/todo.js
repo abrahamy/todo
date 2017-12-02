@@ -12691,7 +12691,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
       this.$dialog.prompt({
         message: "Category Name:",
-        maxlength: 30,
+        inputAttrs: { maxlength: 30 },
         onConfirm: function onConfirm(value) {
           var loadingComponent = _this6.$loading.open();
           __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post(_this6.urls.categories, { name: value }).then(function (response) {

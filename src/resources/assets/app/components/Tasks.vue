@@ -152,7 +152,7 @@ export default {
     createCategory() {
       this.$dialog.prompt({
         message: "Category Name:",
-        maxlength: 30,
+        inputAttrs: { maxlength: 30 },
         onConfirm: value => {
           let loadingComponent = this.$loading.open()
           axios.post(this.urls.categories, { name: value })
