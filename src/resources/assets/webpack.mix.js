@@ -24,3 +24,4 @@ mix.webpackConfig({
  */
 
 mix.js('app/index.js', 'todo.js')
+    .sass('style.scss', 'todo.css')

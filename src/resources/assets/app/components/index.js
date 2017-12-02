@@ -1,7 +1,7 @@
-import TaskList from './TaskList.vue'
+import Tasks from './Tasks.vue'
 
 const components = [
-  TaskList
+  Tasks
 ]
 
 export default (() => {

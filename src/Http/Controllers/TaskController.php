@@ -44,7 +44,7 @@ class TaskController extends Controller
             ]);
         }
 
-        return view('index', $tasks);
+        return view('todo::index', $tasks);
     }
 
     /**
