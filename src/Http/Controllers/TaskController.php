@@ -9,7 +9,7 @@ class TaskController extends Controller
 {
     /**
      * Validate form data
-     * 
+     *
      * @param \Illuminate\Http\Request $request
      * @return array|boolean
      */
@@ -33,9 +33,17 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $tasks = Task::all();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $tasks
+            ]);
+        }
+
         return view('index', $tasks);
     }
 
@@ -50,12 +58,10 @@ class TaskController extends Controller
         $data = $this->validate($request);
 
         if (!$data) {
-            $jsend = [
+            return response()->json([
                 'status' => 'fail',
                 'message' => 'invalid data.'
-            ];
-            $response = Response::make(json_encode($jsend), 400);
-            return response;
+            ], 400);
         }
 
         $task = new Task();
@@ -63,13 +69,12 @@ class TaskController extends Controller
         $task->description = $data['description'];
         $category->save();
 
-        $jsend = [
+        return response()->json([
             'status' => 'success',
             'data' => [
                 'task_id' => $task->id
             ]
-        ];
-        $response = Response::make(\json_encode($jsend), 201);
+        ], 201);
     }
 
     /**
@@ -80,13 +85,10 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        $jsend = [
+        return response()->json([
             'status' => 'success',
             'data' => $task
-        ];
-
-        $response = Response::make(\json_encode($jsend));
-        return $response;
+        ]);
     }
 
     /**
@@ -101,19 +103,17 @@ class TaskController extends Controller
         $data = $this->validate($request);
 
         if (!$data) {
-            $jsend = [
+            return response()->json([
                 'status' => 'error',
                 'message' => 'invalid data.'
-            ];
-            $response = Response::make(json_encode($jsend), 400);
-            return response;
+            ], 400);
         }
 
         $task->category_id = $data['category_id'];
         $task->description = $data['description'];
         $task->save();
 
-        $response = Response::make(null, 204);
+        return response()->json(null, 204);
     }
 
     /**
@@ -125,11 +125,10 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        $jsend = [
+
+        return response()->json([
             'status' => 'success',
             'message' => 'resource deleted.'
-        ];
-        $response = Response::make(\json_encode($jsend));
-        return $response;
+        ]);
     }
 }

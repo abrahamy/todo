@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     /**
      * Validate form data
-     * 
+     *
      * @param \Illuminate\Http\Request $request
      * @return array|boolean
      */
@@ -36,13 +36,11 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        $jsend = [
+
+        return response()->json([
             'status' => 'success',
             'data' => $categories
-        ];
-        $response = Response::make(json_encode($jsend));
-
-        return $response;
+        ]);
     }
 
     /**
@@ -56,27 +54,25 @@ class CategoryController extends Controller
         $data = $this->validate($request);
 
         if (!$data) {
-            $jsend = [
+            return response()->json([
                 'status' => 'fail',
+                'message' => 'Invalid data.',
                 'data' => [
                     'name' => 'Category name is required'
                 ]
-            ];
-            $response = Response::make(json_encode($jsend), 400);
-            return response;
+            ], 400);
         }
 
         $category = new Category();
         $category->name = $data['name'];
         $category->save();
 
-        $jsend = [
+        return response()->json([
             'status' => 'success',
             'data' => [
                 'category_id' => $category->id
             ]
-        ];
-        $response = Response::make(\json_encode($jsend), 201);
+        ], 201);
     }
 
     /**
@@ -87,13 +83,10 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $jsend = [
+        return response()->json([
             'status' => 'success',
             'data' => $category
-        ];
-
-        $response = Response::make(\json_encode($jsend));
-        return $response;
+        ]);
     }
 
     /**
@@ -108,20 +101,19 @@ class CategoryController extends Controller
         $data = $this->validate($request);
 
         if (!$data) {
-            $jsend = [
+            return response()->json([
                 'status' => 'fail',
+                'message' => 'Invalid data.',
                 'data' => [
                     'name' => 'Category name is required'
                 ]
-            ];
-            $response = Response::make(json_encode($jsend), 400);
-            return response;
+            ], 400);
         }
 
         $category->name = $data['name'];
         $category->save();
 
-        $response = Response::make(null, 204);
+        return response()->json(null, 204);
     }
 
     /**
@@ -133,11 +125,10 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        $jsend = [
+
+        return response()->json([
             'status' => 'success',
             'message' => 'resource deleted.'
-        ];
-        $response = Response::make(\json_encode($jsend));
-        return $response;
+        ]);
     }
 }
