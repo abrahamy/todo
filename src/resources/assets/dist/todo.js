@@ -12582,7 +12582,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "tasks",
-  mounted: function mounted() {
+  created: function created() {
     this.getInitialData();
   },
   data: function data() {
@@ -12793,12 +12793,7 @@ var render = function() {
                       }
                     }
                   },
-                  [
-                    _c("b-icon", { attrs: { icon: "send" } }),
-                    _vm._v(" "),
-                    _c("span", [_vm._v("Add Task")])
-                  ],
-                  1
+                  [_vm._v("\n                    Add Task\n                ")]
                 )
               ])
             ],
@@ -12892,6 +12887,8 @@ var installAxios = function installAxios(Vue) {
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       }
     });
+
+    console.log('Testing');
 
     Object.defineProperty(Vue.prototype, '$axios', { value: instance });
   });

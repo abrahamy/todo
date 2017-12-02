@@ -19,9 +19,9 @@
                     </option>
                 </b-select>
                 <p class="control">
-                    <button class="button is-primary" @click.prevent="storeTask">
-                        <b-icon icon="send"></b-icon>
-                        <span>Add Task</span>
+                    <button class="button is-primary"
+                        @click.prevent="storeTask">
+                        Add Task
                     </button>
                 </p>
             </b-field>
@@ -48,7 +48,7 @@
 <script>
 export default {
   name: "tasks",
-  mounted() {
+  created() {
     this.getInitialData();
   },
   data() {

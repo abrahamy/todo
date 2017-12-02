@@ -11,6 +11,8 @@ const installAxios = Vue => {
       }
     })
 
+    console.log('Testing')
+
     Object.defineProperty(Vue.prototype, '$axios', { value: instance })
   })
 }
