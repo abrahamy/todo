@@ -7,26 +7,10 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Validate form data
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return array|boolean
-     */
-    private function validate(Request $request)
-    {
-        $validationRules = [
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'required'
-        ];
-        $data = $request->validate($validationRules);
-
-        if (!(isset($data['category_id']) && isset($data['description']))) {
-            return false;
-        }
-
-        return $data;
-    }
+    private $_validationRule = [
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'required'
+    ];
 
     /**
      * Display a listing of the resource.
@@ -55,9 +39,9 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $this->validate($request);
+        $data = $this->validate($request, $this->_validationRule);
 
-        if (!$data) {
+        if (empty($data)) {
             return response()->json([
                 'status' => 'fail',
                 'message' => 'invalid data.'
@@ -100,9 +84,9 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        $data = $this->validate($request);
+        $data = $this->validate($request, $this->_validationRule);
 
-        if (!$data) {
+        if (empty($data)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'invalid data.'

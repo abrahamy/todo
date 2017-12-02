@@ -8,25 +8,9 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
-    /**
-     * Validate form data
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return array|boolean
-     */
-    private function validate(Request $request)
-    {
-        $validationRules = [
-            'name' => 'required|unique:categories|max:30'
-        ];
-        $data = $request->validate($validationRules);
-
-        if (!isset($data['name'])) {
-            return false;
-        }
-
-        return $data;
-    }
+    private $_validationRule = [
+        'name' => 'required|unique:categories|max:30'
+    ];
 
     /**
      * Display a listing of the resource.
@@ -51,9 +35,9 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $this->validate($request);
+        $data = $this->validate($request, $this->_validationRule);
 
-        if (!$data) {
+        if (empty($data)) {
             return response()->json([
                 'status' => 'fail',
                 'message' => 'Invalid data.',
@@ -98,9 +82,9 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $data = $this->validate($request);
+        $data = $this->validate($request, $this->_validationRule);
 
-        if (!$data) {
+        if (empty($data)) {
             return response()->json([
                 'status' => 'fail',
                 'message' => 'Invalid data.',
