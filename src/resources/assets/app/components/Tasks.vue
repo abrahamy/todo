@@ -47,143 +47,146 @@
 
 <script>
 export default {
-  name: "tasks",
-  created() {
-    this.getInitialData();
-  },
-  data() {
-    return {
-      categories: [],
-      tasks: [],
-      task: {},
-      urls: {
-        categories: "/todo/categories",
-        tasks: "/todo/tasks"
-      }
-    };
-  },
-  computed: {
-    pendingTasks() {
-      this.tasks.filter(t => !t.done);
+    name: "tasks",
+    created() {
+        this.getInitialData();
     },
-    completedTasks() {
-      return this.tasks.filter(t => t.done);
-    }
-  },
-  methods: {
-    getInitialData() {
-      let getters = [this.urls.categories, this.urls.tasks].map(
-        this.$axios.get
-      );
+    data() {
+        return {
+            categories: [],
+            tasks: [],
+            task: {},
+            urls: {
+                categories: "/todo/categories",
+                tasks: "/todo/tasks"
+            }
+        };
+    },
+    computed: {
+        pendingTasks() {
+            this.tasks.filter(t => !t.done);
+        },
+        completedTasks() {
+            return this.tasks.filter(t => t.done);
+        }
+    },
+    methods: {
+        getInitialData() {
+            let getters = [
+                this.urls.categories, this.urls.tasks
+            ].map(url => {
+                return this.$axios.get(url)
+            });
 
-      let loadingComponent = this.$loading.open();
-      this.$axios
-        .all(getters)
-        .then(
-          this.$axios.spread((categoriesResponse, tasksResponse) => {
-            loadingComponent.close();
-            this.categories = categoriesResponse.data.data;
-            this.tasks = tasksResponse.data.data;
-          })
-        )
-        .catch(error => {
-          loadingComponent.close();
-          this.$toast.open({
-            type: "is-danger",
-            message:
-              "Unable to retrieve data at this moment, please try again later."
-          });
-          console.log(error);
-        });
-    },
-    fetchTasks() {
-      this.$axios.get(this.urls.tasks).then(response => {
-        this.tasks = response.data.data;
-      });
-    },
-    fetchCategories() {
-      this.$axios.get(this.urls.categories).then(response => {
-        this.categories = response.data.data;
-      });
-    },
-    storeTask() {
-      if (!(this.task.description && this.task.category_id)) {
-        this.$toast.open({
-          type: "is-warning",
-          message: "Task and Category are required!"
-        });
-        return;
-      }
+            let loadingComponent = this.$loading.open();
+            this.$axios
+                .all(getters)
+                .then(
+                    this.$axios.spread((categoriesResponse, tasksResponse) => {
+                        loadingComponent.close();
+                        this.categories = categoriesResponse.data.data;
+                        this.tasks = tasksResponse.data.data;
+                    })
+                )
+                .catch(error => {
+                    loadingComponent.close();
+                    this.$toast.open({
+                        type: "is-danger",
+                        message: "Unable to retrieve data at this moment, please try again later."
+                    });
+                    console.log(error);
+                });
+        },
+        fetchTasks() {
+            this.$axios.get(this.urls.tasks).then(response => {
+                this.tasks = response.data.data;
+            });
+        },
+        fetchCategories() {
+            this.$axios.get(this.urls.categories).then(response => {
+                this.categories = response.data.data;
+            });
+        },
+        storeTask() {
+            if (!(this.task.description && this.task.category_id)) {
+                this.$toast.open({
+                    type: "is-warning",
+                    message: "Task and Category are required!"
+                });
+                return;
+            }
 
-      let payload = { ...this.task };
-      let loadingComponent = this.$loading.open();
-      this.$axios
-        .post(this.urls.tasks, payload)
-        .then(response => {
-          loadingComponent.close();
-          this.$toast.open({
-            type: "is-success",
-            message: "Task saved!"
-          });
-          this.task = {};
-          this.fetchTasks();
-        })
-        .catch(error => {
-          loadingComponent.close();
-          this.$toast.open({
-            type: "is-danger",
-            message:
-              error.response && error.response.data.message
-                ? error.response.data.message
-                : "An unexpected error occured, task not saved."
-          });
-          console.log(error);
-        });
-    },
-    toggleDone(task) {
-      let payload = { ...task };
-      let url = `${this.urls.tasks}/${payload.id}`;
-      let loadingComponent = this.$loading.open();
+            let payload = { ...this.task
+            };
+            let loadingComponent = this.$loading.open();
+            this.$axios
+                .post(this.urls.tasks, payload)
+                .then(response => {
+                    loadingComponent.close();
+                    this.$toast.open({
+                        type: "is-success",
+                        message: "Task saved!"
+                    });
+                    this.task = {};
+                    this.fetchTasks();
+                })
+                .catch(error => {
+                    loadingComponent.close();
+                    this.$toast.open({
+                        type: "is-danger",
+                        message: error.response && error.response.data.message ?
+                            error.response.data.message :
+                            "An unexpected error occured, task not saved."
+                    });
+                    console.log(error);
+                });
+        },
+        toggleDone(task) {
+            let payload = { ...task
+            };
+            let url = `${this.urls.tasks}/${payload.id}`;
+            let loadingComponent = this.$loading.open();
 
-      payload.done = !payload.done;
-      this.$axios
-        .put(url, payload)
-        .then(response => {
-          loadingComponent.close();
-          this.fetchTasks();
-        })
-        .catch(error => {
-          this.$toast.open({
-            type: "is-danger",
-            message:
-              error.response && error.response.data.message
-                ? error.response.data.message
-                : "An unexpected error occured, action failed."
-          });
-          console.log(error);
-        });
-    },
-    createCategory() {
-      this.$dialog.prompt({
-        message: "Category Name:",
-        maxlength: 30,
-        onConfirm: value => {
-          let loadingComponent = this.$loading.open();
-          this.$axios
-            .post(this.urls.categories, { name: value })
-            .then(response => {
-              loadingComponent.close();
-              this.fetchCategories();
-              this.$toast.open("New category added!");
-            })
-            .catch(error => {
-              loadingComponent.close();
-              console.log(error);
+            payload.done = !payload.done;
+            this.$axios
+                .put(url, payload)
+                .then(response => {
+                    loadingComponent.close();
+                    this.fetchTasks();
+                })
+                .catch(error => {
+                    this.$toast.open({
+                        type: "is-danger",
+                        message: error.response && error.response.data.message ?
+                            error.response.data.message :
+                            "An unexpected error occured, action failed."
+                    });
+                    console.log(error);
+                });
+        },
+        createCategory() {
+            this.$dialog.prompt({
+                message: "Category Name:",
+                maxlength: 30,
+                onConfirm: value => {
+                    let loadingComponent = this.$loading.open();
+                    this.$axios
+                        .post(this.urls.categories, {
+                            name: value
+                        })
+                        .then(response => {
+                            loadingComponent.close();
+                            this.fetchCategories();
+                            this.$toast.open("New category added!");
+                        })
+                        .catch(error => {
+                            loadingComponent.close();
+                            console.log(error);
+                        });
+                }
             });
         }
-      });
     }
-  }
 };
 </script>
 
