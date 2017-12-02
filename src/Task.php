@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
+    protected $fillable = [
+        'category_id',
+        'description'
+    ];
+
     /**
      * Get the category of a task.
      */

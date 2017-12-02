@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     pendingTasks() {
-      this.tasks.filter(t => !t.done)
+      return this.tasks.filter(t => !t.done)
     },
     completedTasks() {
       return this.tasks.filter(t => t.done)

@@ -48,10 +48,7 @@ class TaskController extends Controller
             ], 400);
         }
 
-        $task = new Task();
-        $task->category_id = $data['category_id'];
-        $task->description = $data['description'];
-        $category->save();
+        $task = Task::create($data);
 
         return response()->json([
             'status' => 'success',
