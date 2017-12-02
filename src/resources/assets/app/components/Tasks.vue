@@ -51,8 +51,8 @@ export default {
       tasks: [],
       task: {},
       urls: {
-        categories: "/todo/categories",
-        tasks: "/todo/tasks"
+        categories: "/categories",
+        tasks: "/tasks"
       }
     }
   },
