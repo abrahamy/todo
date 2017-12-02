@@ -77,10 +77,10 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Category  $category
+     * @param  integer $categoryId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, $categoryId)
     {
         $data = $this->validate($request, $this->_validationRule);
 
@@ -94,8 +94,7 @@ class CategoryController extends Controller
             ], 400);
         }
 
-        $category->name = $data['name'];
-        $category->save();
+        Category::findOrFail($categoryId)->update($data);
 
         return response()->json(null, 204);
     }

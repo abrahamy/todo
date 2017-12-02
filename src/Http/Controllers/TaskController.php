@@ -77,10 +77,10 @@ class TaskController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Task  $task
+     * @param  integer  $taskId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, $taskId)
     {
         $data = $this->validate($request, $this->_validationRule);
 
@@ -91,10 +91,7 @@ class TaskController extends Controller
             ], 400);
         }
 
-        $task->category_id = $data['category_id'];
-        $task->description = $data['description'];
-        $task->done = isset($data['done']) ? $data['done'] : false;
-        $task->save();
+        Task::findOrFail($taskId)->update($data);
 
         return response()->json(null, 204);
     }
