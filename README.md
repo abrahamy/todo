@@ -15,7 +15,8 @@ A simple Todo list package for Laravel.
 Via Composer
 
 ``` bash
-$ composer require abrahamy/Todo
+$ composer require abrahamy/todo dev-master
+$ php artisan vendor:publish --all
 ```
 
 ## Change log
